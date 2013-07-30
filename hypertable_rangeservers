@@ -77,8 +77,9 @@ def main():
 
         for rangeserver in rangeservers:
             name = rangeserver["location"]
+            hostname = rangeserver["hostname"]
             
-            print '%s_diskUsePct.label %s' % (name, name)
+            print '%s_diskUsePct.label %s - %s' % (name, name, hostname)
             #print '%s_diskUsePct.type ABSOLUTE' % name
             print '%s_diskUsePct.warning 70' % name
             print '%s_diskUsePct.critical 95' % name
@@ -92,8 +93,9 @@ def main():
 
         for rangeserver in rangeservers:
             name = rangeserver["location"]
+            hostname = rangeserver["hostname"]
             
-            print '%s_rangeCount.label %s' % (name, name)
+            print '%s_rangeCount.label %s - %s' % (name, name, hostname)
             #print '%s_rangeCount.type ABSOLUTE' % name
             print '%s_rangeCount.info Number of ranges' % name
             print
@@ -105,8 +107,9 @@ def main():
 
         for rangeserver in rangeservers:
             name = rangeserver["location"]
+            hostname = rangeserver["hostname"]
             
-            print '%s_skew.label %s' % (name, name)
+            print '%s_skew.label %s - %s' % (name, name, hostname)
             #print '%s_skew.type ABSOLUTE' % name
             print '%s_skew.info Clock skew' % name
             print
