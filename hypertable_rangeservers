@@ -1,0 +1,122 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+
+=head1 NAME
+
+Hypertable RangeServers
+
+=head1 AUTHOR
+
+Jordi Llonch <llonchj@gmail.com>
+
+=head1 LICENSE
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+=head1 MAGIC MARKERS
+
+  #%# family=auto
+  #%# capabilities=autoconf
+
+"""
+
+import sys
+import json
+import copy
+
+from os import chdir, environ
+from posixpath import exists, join as join_path
+
+hypertable_home = environ.get('HYPERTABLE_HOME', "/opt/hypertable/current")
+monitoring_folder = join_path(hypertable_home, "run/monitoring")
+rangeserver_json_path = join_path(monitoring_folder, "rangeserver_summary.json")
+table_json_path = join_path(monitoring_folder, "table_summary.json")
+
+def main():
+    """docstring for main"""
+
+    if len(sys.argv) == 2 and sys.argv[1] == "autoconf":
+            print "yes" if (exists(monitoring_folder) and 
+                            exists(hypertable_home)) else "no"
+            exit(0)
+
+    chdir(hypertable_home)
+
+    try:
+        rangeserver_summary = open(rangeserver_json_path).read()
+        rangeserver_summary = json.loads(rangeserver_summary)
+    except Exception, exc:
+        print >> sys.stderr, "%s retrieving '%s'" % (exc, rangeserver_json_path)
+        exit (-1)
+    else:
+        rangeservers = rangeserver_summary['RangeServerSummary']['servers']
+    multigraph = len(rangeservers) > 1
+
+    if len(sys.argv) == 2 and sys.argv[1] == "suggest":
+        for rangeserver in rangeservers:
+            name = rangeserver["location"]
+            print name
+    elif len(sys.argv) == 2 and sys.argv[1] == "config":
+
+        print "multigraph rangeservers_diskUsePct"
+
+        print 'graph_title RangeServer Disk Usage'
+        print 'graph_category hypertable'
+
+        for rangeserver in rangeservers:
+            name = rangeserver["location"]
+            
+            print '%s_diskUsePct.label %s' % (name, name)
+            #print '%s_diskUsePct.type ABSOLUTE' % name
+            print '%s_diskUsePct.warning 70' % name
+            print '%s_diskUsePct.critical 95' % name
+            print '%s_diskUsePct.info Disk usage' % name
+            print
+        
+        print "multigraph rangeservers_rangeCount"
+
+        print 'graph_title RangeServer Range Count'
+        print 'graph_category hypertable'
+
+        for rangeserver in rangeservers:
+            name = rangeserver["location"]
+            
+            print '%s_rangeCount.label %s' % (name, name)
+            #print '%s_rangeCount.type ABSOLUTE' % name
+            print '%s_rangeCount.info Number of ranges' % name
+            print
+
+        print "multigraph rangeservers_skew"
+        
+        print 'graph_title RangeServer Clock Skew'
+        print 'graph_category hypertable'
+
+        for rangeserver in rangeservers:
+            name = rangeserver["location"]
+            
+            print '%s_skew.label %s' % (name, name)
+            #print '%s_skew.type ABSOLUTE' % name
+            print '%s_skew.info Clock skew' % name
+            print
+    else:
+
+        for key in ['rangeCount', 'diskUsePct', 'skew']:
+            print "multigraph rangeservers_%s" % key
+            for rangeserver in rangeservers:
+                name = rangeserver["location"]
+                print "%s_%s.value %s" % (name, key, rangeserver[key])
+            
+if __name__ == '__main__':
+    main()
