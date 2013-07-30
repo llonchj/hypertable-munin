@@ -99,15 +99,6 @@ def main():
             print
         
     else:
-        #m = re.search("hypertable_tables_(?P<plugin>.*)$", sys.argv[0], re.I | re.S | re.M)
-        #if m is None:
-        #    print >> sys.stderr, "Plugin is not correctly installed. Use: sudo -u munin -H munin-node-configure --suggest --shell"
-        #    exit(2)
-        #plugin = m.groupdict()["plugin"]
-        #if plugin not in graphs.keys():
-        #    print >> sys.stderr, "Invalid plugin. Use: sudo -u munin -H munin-node-configure --suggest --shell"
-        #    exit(3)
-
         for plugin in graphs.keys():
             print "multigraph hypertable_tables_%s" % plugin
             for table in tables:
