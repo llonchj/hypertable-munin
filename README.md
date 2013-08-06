@@ -2,16 +2,18 @@
 
 ##Installation
 
-This plugin needs to be installed in a node containing Hypertable Master and munin-node.
+Install munin-node and this munin-plugin in the node running Hypertable Master.
 
 Copy the plug-in files `hypertable_rangeservers` and `hypertable_tables` into the munin plugin directory, e.g ``/etc/munin/plugins/``.
 
-If your Hypertable installation is on a directory other than ``/opt/hypertable/current``, set the directory in ``/etc/munin/plugin-conf.d``):
+If your Hypertable location is other than ``/opt/hypertable/current``, set `HYPERTABLE_HOME` in ``/etc/munin/plugin-conf.d``):
 
     [hypertable_*]
     env.HYPERTABLE_HOME /opt/my_hypertable_installation/1.2.3
 
+### TODO
 
+* Graph rrdtool data in $HYPERTABLE_HOME/run/monitoring/{rangeservers,tables}
 
 ##License and Authors
 
