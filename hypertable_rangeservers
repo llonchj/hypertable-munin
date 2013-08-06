@@ -85,6 +85,20 @@ def main():
             print name
     elif len(sys.argv) == 2 and sys.argv[1] == "config":
 
+        print "multigraph rangeservers_health"
+
+        print 'graph_title RangeServer Health'
+        print 'graph_category hypertable'
+
+        for rangeserver in rangeservers:
+            name = rangeserver["location"]
+            hostname = rangeserver["hostname"]
+            
+            print '%s_health.label %s - %s' % (name, name, hostname)
+            print '%s_health.critical 1' % name
+            print '%s_health.info Health' % name
+            print
+        
         print "multigraph rangeservers_diskUsePct"
 
         print 'graph_title RangeServer Disk Usage'
@@ -129,12 +143,18 @@ def main():
             print '%s_skew.info Clock skew' % name
             print
     else:
+        print "multigraph rangeservers_health"
+        for rangeserver in rangeservers:
+            name = rangeserver["location"]
+            value = "0" if rangeserver["lastError"] == "ok" else "1"
+            print "%s_health.value %s" % (name, value)
 
         for key in ['rangeCount', 'diskUsePct', 'skew']:
             print "multigraph rangeservers_%s" % key
             for rangeserver in rangeservers:
                 name = rangeserver["location"]
                 print "%s_%s.value %s" % (name, key, rangeserver[key])
+
             
 if __name__ == '__main__':
     main()
