@@ -74,11 +74,6 @@ def main():
     creationDate = datetime.datetime.fromtimestamp(
         path.getmtime(rangeserver_json_path))
 
-    if datetime.datetime.now() - lastContact > datetime.timedelta(
-                                                seconds=outdated_seconds):
-        print >> sys.stderr, "FATAL! Check Hypertable Master is up and running"
-        sys.exit(5)
-
     if len(sys.argv) == 2 and sys.argv[1] == "suggest":
         for rangeserver in rangeservers:
             name = rangeserver["location"]
@@ -143,6 +138,11 @@ def main():
             print '%s_skew.info Clock skew' % name
             print
     else:
+        if datetime.datetime.now() - lastContact > datetime.timedelta(
+                                                    seconds=outdated_seconds):
+            print >> sys.stderr, "FATAL! Check Hypertable Master is up and running"
+            sys.exit(5)
+
         print "multigraph rangeservers_health"
         for rangeserver in rangeservers:
             name = rangeserver["location"]
